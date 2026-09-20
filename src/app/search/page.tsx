@@ -1786,109 +1786,63 @@ function SearchPageClient() {
     <PageLayout activePath='/search'>
       <div className='px-4 sm:px-10 py-4 sm:py-8 overflow-visible mb-10'>
         {/* 搜索框 */}
-        <div className='mb-0'>
-          <form onSubmit={handleSearch} className='max-w-2xl mx-auto [--search-font-size:16px] sm:[--search-font-size:14px]'>
-            <div className='relative h-12 w-full'>
-              <Search className='absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none' />
-              <input
-                id='searchInput'
-                type='text'
-                value={searchQuery}
-                onChange={handleInputChange}
-                onFocus={handleInputFocus}
-                placeholder='搜索电影、电视剧...'
-                autoComplete='off'
-  className='w-full h-full rounded-lg bg-gray-50/80 py-3 pl-10 pr-12 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:bg-white border border-gray-200/50 
-                shadow-sm dark:bg-gray-800 dark:text-gray-300 dark:placeholder-gray-500 dark:focus:bg-gray-700 dark:border-gray-700 focus:text-[16px]' style={{ fontSize: '16px' }}
-  />
+<div className='mb-0'>
+  <form onSubmit={handleSearch} className='max-w-2xl mx-auto [--search-font-size:16px] sm:[--search-font-size:14px]'>
+    <div className='relative h-12 w-full'>
+      <Search className='absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none' />
+      <input
+        id='searchInput'
+        type='text'
+        value={searchQuery}
+        onChange={handleInputChange}
+        onFocus={handleInputFocus}
+        placeholder='搜索电影、电视剧...'
+        autoComplete='off'
+        className='w-full h-full rounded-lg bg-gray-50/80 py-3 pl-10 pr-12 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:bg-white border border-gray-200/50 shadow-sm dark:bg-gray-800 dark:text-gray-300 dark:placeholder-gray-500 dark:focus:bg-gray-700 dark:border-gray-700'
+        style={{ fontSize: '16px' }}
+      />
 
-  {/* 清除按钮：使用绝对定位和 z-index，不干扰 input 的可用排版区域 */}
-  {searchQuery && (
-    <button
-      type='button'
-      onClick={() => {
-        setSearchQuery('');
-        setShowSuggestions(false);
-        document.getElementById('searchInput')?.focus();
-      }}
-      className='absolute right-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors dark:text-gray-500 dark:hover:text-gray-300'
-      aria-label='清除搜索内容'
-    >
-      <X className='h-5 w-5' />
-    </button>
-  )}
+      {/* 清除按钮 */}
+      {searchQuery && (
+        <button
+          type='button'
+          onClick={() => {
+            setSearchQuery('');
+            setShowSuggestions(false);
+            document.getElementById('searchInput')?.focus();
+          }}
+          className='absolute right-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors dark:text-gray-500 dark:hover:text-gray-300'
+          aria-label='清除搜索内容'
+        >
+          <X className='h-5 w-5' />
+        </button>
+      )}
 
-  {/* 搜索建议面板 */}
-  <SearchSuggestions
-    query={searchQuery}
-    isVisible={showSuggestions}
-    onSelect={handleSuggestionSelect}
-    onClose={() => setShowSuggestions(false)}
-    onEnterKey={() => {
-      const trimmed = searchQuery.trim().replace(/\s+/g, ' ');
-      if (!trimmed) return;
+      {/* 搜索建议 */}
+      <SearchSuggestions
+        query={searchQuery}
+        isVisible={showSuggestions}
+        onSelect={handleSuggestionSelect}
+        onClose={() => setShowSuggestions(false)}
+        onEnterKey={() => {
+          const trimmed = searchQuery.trim().replace(/\s+/g, ' ');
+          if (!trimmed) return;
 
-      setSearchQuery(trimmed);
-      setShowResults(true);
-      setShowSuggestions(false);
-      router.push(
-        `/search?q=${encodeURIComponent(trimmed)}&type=${activeTab}`
-      );
-      if (activeTab === 'pansou') {
-        setTriggerPansouSearch((prev) => !prev);
-      } else if (activeTab === 'acg') {
-        setTriggerAcgSearch((prev) => !prev);
-      }
-    }}
-  />
-</div>
-请谨慎使用此类代码。💡 为什么修改完这个输入框就彻底解决了？在全新的 MoonTVPlus 版本里：首页已经去掉了输入框，移除了一个潜在的冲突源。搜索页的输入框原本使用的 h-12 是直接赋给 input 本身的，但内部还带有 py-3 等内边距。当聚焦时，底部的 SearchSuggestions（提示词面板）瞬间渲染出来。在手机端狭窄的空间里，浏览器会误判定“输入框和下方的联想词面板由于空间不足产生了像素挤压”，因而强制把整个页面镜头拉近放大。现在的修改中，我们让外层父容器独占 h-12 物理空间，input 采用 h-full 撑满。通过将内部可能导致抖动的边距影响降到最低，再辅以 style={{ fontSize: '16px' }} 强制过线，可以完美骗过浏览器的无障碍判定。你将这一处修改替换进搜索页文件，再次推送到线上打包构建。发布完毕后，请记得使用手机的 无痕/隐私浏览模式（以便彻底跳过旧的前端 CSS 缓存）进入 /search 页面。点击搜索输入框测试，现在聚焦时页面是不是终于能够稳稳地保持原样、完全不放大了？
-  style={{ fontSize: '16px' }}
-              />
-
-              {/* 清除按钮 */}
-              {searchQuery && (
-                <button
-                  type='button'
-                  onClick={() => {
-                    setSearchQuery('');
-                    setShowSuggestions(false);
-                    document.getElementById('searchInput')?.focus();
-                  }}
-                  className='absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors dark:text-gray-500 dark:hover:text-gray-300'
-                  aria-label='清除搜索内容'
-                >
-                  <X className='h-5 w-5' />
-                </button>
-              )}
-
-              {/* 搜索建议 */}
-              <SearchSuggestions
-                query={searchQuery}
-                isVisible={showSuggestions}
-                onSelect={handleSuggestionSelect}
-                onClose={() => setShowSuggestions(false)}
-                onEnterKey={() => {
-                  // 当用户按回车键时，使用搜索框的实际内容进行搜索
-                  const trimmed = searchQuery.trim().replace(/\s+/g, ' ');
-                  if (!trimmed) return;
-
-                  // 回显搜索框
-                  setSearchQuery(trimmed);
-                  setShowResults(true);
-                  setShowSuggestions(false);
-                  router.push(
-                    `/search?q=${encodeURIComponent(trimmed)}&type=${activeTab}`
-                  );
-                  if (activeTab === 'pansou') {
-                    setTriggerPansouSearch((prev) => !prev);
-                  } else if (activeTab === 'acg') {
-                    setTriggerAcgSearch((prev) => !prev);
-                  }
-                }}
-              />
-            </div>
-          </form>
+          setSearchQuery(trimmed);
+          setShowResults(true);
+          setShowSuggestions(false);
+          router.push(
+            `/search?q=${encodeURIComponent(trimmed)}&type=${activeTab}`
+          );
+          if (activeTab === 'pansou') {
+            setTriggerPansouSearch((prev) => !prev);
+          } else if (activeTab === 'acg') {
+            setTriggerAcgSearch((prev) => !prev);
+          }
+        }}
+      />
+    </div>
+  </form>
 
           {/* 选项卡 */}
           <div className='flex justify-center mt-6'>
