@@ -55,6 +55,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   viewportFit: 'cover',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,  
 };
 
 export default async function RootLayout({
@@ -357,7 +361,7 @@ export default async function RootLayout({
         <meta name='moontvplus-site' content='1' />
         <meta
           name='viewport'
-          content='width=device-width, initial-scale=1.0, viewport-fit=cover'
+          content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
         />
         <link rel='apple-touch-icon' href='/icons/icon-192x192.png' />
         {/* 主题CSS */}
