@@ -116,3 +116,17 @@
     background-size: 0 2px, 100% 2px;
   }
 }
+@media (hover: none) and (pointer: coarse) {
+  input,
+  textarea,
+  select,
+  [contenteditable] {
+    font-size: max(16px, 1em) !important;
+  }
+  input:focus,
+  textarea:focus,
+  select:focus,
+  [contenteditable]:focus {
+    font-size: max(16px, 1em) !important;
+  }
+}
