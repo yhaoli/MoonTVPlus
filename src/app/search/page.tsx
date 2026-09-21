@@ -1184,7 +1184,7 @@ function SearchPageClient() {
     }
 
     if (!query) {
-      document.getElementById('searchInput')?.focus();
+     // document.getElementById('searchInput')?.focus();
     }
   }, [
     searchParams,
